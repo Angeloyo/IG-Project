@@ -8,14 +8,25 @@
 
     <link href="./src/css/output.css" rel="stylesheet">
     <!-- <link href="./src/output.min.css" rel="stylesheet"> -->
-</head>
-<body class="font-sg p-16">
-    
-    <main>
-        <h1 class="text-4xl">Three Body Problem</h1>
-        <h2>Made by Ángel Sánchez Guerrero. Project for Interactive Graphics @ Sapienza Università di Roma.</h2>
-    </main>
 
-    <script src="src/app.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.module.js",
+            "FBXLoader": "https://cdn.jsdelivr.net/npm/three@0.149.0/examples/jsm/loaders/FBXLoader.js",
+            "OrbitControls": "https://cdn.jsdelivr.net/npm/three@0.149.0/examples/jsm/controls/OrbitControls.js"
+        }
+    }
+    </script>
+
+</head>
+<body class="font-sg">
+    
+    <!-- <main>
+        <h1 class="text-4xl font-bold">Three Body Problem</h1>
+        <h2>Made by Ángel Sánchez Guerrero. Project for Interactive Graphics @ Sapienza Università di Roma.</h2>
+    </main> -->
+
+    <script type="module" src="src/js/app.js"></script>
 </body>
 </html>
