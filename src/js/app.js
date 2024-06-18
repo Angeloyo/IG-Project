@@ -1,23 +1,22 @@
 import * as THREE from 'three';
-import { FBXLoader } from 'FBXLoader';
 import { OrbitControls } from 'OrbitControls';
 
 // Scene setup
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x000000); 
+scene.background = new THREE.Color(0x000000);
 
 // Camera setup
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 50;  
+camera.position.set(0, 0, 1);  // Mueve la cámara un poco hacia atrás
 
 // Renderer setup
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// orbit controls
+// Orbit controls
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;  
+controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 
 // Lighting setup
@@ -25,30 +24,26 @@ const light = new THREE.PointLight(0xffffff, 1.5);
 light.position.set(50, 50, 50);
 scene.add(light);
 
-// Load bg model
-const loader = new FBXLoader();
-loader.load('/src/models/universe.fbx', function (object) {
-    const texture = new THREE.TextureLoader().load('/src/textures/universe.jpg');
-    object.traverse(function (child) {
-        if (child.isMesh) {
-            child.material.map = texture;
-            child.material.needsUpdate = true;  
-        }
-    });
+// Universe texture
+const loader = new THREE.TextureLoader();
+const texture = loader.load('/src/textures/universe3.jpg');  // Asegúrate de que la ruta es correcta
 
-    scene.add(object);
-    animate();
-}, undefined, function (error) {
-    console.error('An error happened during the loading of the FBX model:', error);
+// Sphere setup
+const geometry = new THREE.SphereGeometry(500, 60, 40);
+const material = new THREE.MeshBasicMaterial({
+    map: texture,
+    side: THREE.BackSide
 });
+const sphere = new THREE.Mesh(geometry, material);
+scene.add(sphere);
 
 function animate() {
     requestAnimationFrame(animate);
-    controls.update(); 
+    controls.update();
     renderer.render(scene, camera);
 }
 
-// window resize
+// Window resize handler
 window.addEventListener('resize', onWindowResize, false);
 
 function onWindowResize() {
@@ -56,3 +51,5 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
+
+animate();
