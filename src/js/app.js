@@ -42,8 +42,8 @@ const bgMaterial = new THREE.MeshBasicMaterial({
     map: bgTexture,
     side: THREE.BackSide
 });
-const sphere = new THREE.Mesh(bgGeometry, bgMaterial);
-scene.add(sphere);
+const bgSphere = new THREE.Mesh(bgGeometry, bgMaterial);
+scene.add(bgSphere);
 
 // Window resize handler
 window.addEventListener('resize', onWindowResize, false);
@@ -58,28 +58,75 @@ function getRandomInRange(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+
 const celestialBodies = [
     {
+        type: 'star',
         mass: 1.989e30,
         position: new THREE.Vector3(
-            getRandomInRange(0, 200),
-            getRandomInRange(0, 200),
-            getRandomInRange(0, 200)
+            getRandomInRange(0, 400),
+            getRandomInRange(0, 400),
+            getRandomInRange(0, 400)
         ),
-        velocity: new THREE.Vector3(600, 0, 0),
+        velocity: new THREE.Vector3(
+            getRandomInRange(1000, 10500),
+            getRandomInRange(1000, 10500),
+            getRandomInRange(1000, 10500),
+            ),
         mesh: null,
         light: null,
         trailPositions: null,
         trailLimit: null,
     },
     {
+        type: 'star',
         mass: 5.972e24,
         position: new THREE.Vector3(
-            getRandomInRange(0, 200),
-            getRandomInRange(0, 200),
-            getRandomInRange(0, 200)
+            getRandomInRange(0, 400),
+            getRandomInRange(0, 400),
+            getRandomInRange(0, 400)
         ),
-        velocity: new THREE.Vector3(0, 10000, 0),
+        velocity: new THREE.Vector3(
+            getRandomInRange(1000, 10500),
+            getRandomInRange(1000, 10500),
+            getRandomInRange(1000, 10500),
+            ),
+        mesh: null,
+        light: null,
+        trailPositions: null,
+        trailLimit: null,
+    },
+    {
+        type: 'star',
+        mass: 5.972e28,
+        position: new THREE.Vector3(
+            getRandomInRange(0, 400),
+            getRandomInRange(0, 400),
+            getRandomInRange(0, 400)
+        ),
+        velocity: new THREE.Vector3(
+            getRandomInRange(1000, 10500),
+            getRandomInRange(1000, 10500),
+            getRandomInRange(1000, 10500),
+            ),
+        mesh: null,
+        light: null,
+        trailPositions: null,
+        trailLimit: null,
+    },
+    {
+        type: 'planet',
+        mass: 5.972e18,
+        position: new THREE.Vector3(
+            getRandomInRange(0, 400),
+            getRandomInRange(0, 400),
+            getRandomInRange(0, 400)
+        ),
+        velocity: new THREE.Vector3(
+            getRandomInRange(1000, 10500),
+            getRandomInRange(1000, 10500),
+            getRandomInRange(1000, 10500),
+            ),  
         mesh: null,
         light: null,
         trailPositions: null,
@@ -87,16 +134,27 @@ const celestialBodies = [
     },
 ];
 
-const starGeometry = new THREE.SphereGeometry(5, 32, 32);  // Size of the stars
+const starGeometry = new THREE.SphereGeometry(5, 32, 32); // Size for stars
+const planetGeometry = new THREE.SphereGeometry(2, 32, 32); // Smaller size for planets
 
 const starTexture1 = loader.load('/src/textures/star1.png');
 const starMaterial = new THREE.MeshBasicMaterial({
     map: starTexture1,
 });
 
+const planetTexture1 = loader.load('/src/textures/mercury.jpg');
+const planetMaterial = new THREE.MeshBasicMaterial({
+    map: planetTexture1,
+});
+
 celestialBodies.forEach(body => {
     // const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-    body.mesh = new THREE.Mesh(starGeometry, starMaterial);
+
+    let bodyGeometry = body.type === 'star' ? starGeometry : planetGeometry;
+
+    let bodyMaterial = body.type === 'star' ? starMaterial : planetMaterial;
+
+    body.mesh = new THREE.Mesh(bodyGeometry, bodyMaterial);
     body.mesh.scale.set(1, 1, 1);
     body.mesh.position.copy(body.position);
 
@@ -123,14 +181,14 @@ function calculateGeometricCenter() {
     return sumPosition;
 }
 
-
-
 let continuePhysics = true; 
+
+let timeStep = 0.0001;
 
 function updatePhysics() {
     if (!continuePhysics) return;  // stop physics if collision detected
 
-    const G = 6.67430e-11 * 1e-10;  // Gravitational constant (scaled down)
+    const G = 6.67430e-11 * 1e-10   ;  // Gravitational constant (scaled down)
     let force, distanceVector, distance, forceMagnitude;
 
     celestialBodies.forEach(body => {
@@ -141,10 +199,14 @@ function updatePhysics() {
                 distanceVector = new THREE.Vector3().subVectors(other.position, body.position);
                 distance = distanceVector.length();
 
+                let bodyRadius = body.type === 'star' ? 5 : 2;
+                let otherRadius = other.type === 'star' ? 5 : 2;
+                const collisionDistance = bodyRadius + otherRadius;
+
                 // Check for collision
-                if (distance <= 10) {  
+                if (distance <= collisionDistance) {  
                     continuePhysics = false;
-                    // console.log("Collision detected, physics stopped.");
+                    console.log("Collision detected between", body.type, "and", other.type, ", physics stopped.");
                 }
 
                 forceMagnitude = (G * body.mass * other.mass) / (distance * distance);
@@ -154,7 +216,6 @@ function updatePhysics() {
         });
     });
 
-    const timeStep = 0.0001;  // Reduced time step to slow down the simulation
     celestialBodies.forEach(body => {
         let acceleration = body.force.divideScalar(body.mass);
         body.velocity.add(acceleration.multiplyScalar(timeStep));  // Apply scaled time step
@@ -168,7 +229,6 @@ function updatePhysics() {
         body.mesh.position.copy(body.position);
         body.light.position.copy(body.position);
     });
-
 
 }
 
@@ -199,6 +259,9 @@ function animate() {
     // camera.position.y = geometricCenter.y + 200;
     // camera.position.z = geometricCenter.z + 200;
     // camera.lookAt(geometricCenter);
+
+    bgSphere.position.copy(geometricCenter);
+
     controls.target.set(geometricCenter.x, geometricCenter.y, geometricCenter.z);
 
     controls.update();
@@ -207,5 +270,34 @@ function animate() {
 }
 
 animate();
+
+const gui = new dat.GUI();
+
+const settings = {
+    Start: () => startSimulation(),
+    Pause: () => pauseSimulation(),
+    TimeSpeed: timeStep,
+};
+
+gui.add(settings, 'Pause');
+function pauseSimulation() {
+    continuePhysics = false;
+}
+
+gui.add(settings, 'Start');
+function startSimulation() {
+    continuePhysics = true;
+    // animate();
+}
+
+gui.add(settings, 'TimeSpeed', 0.000005, 0.0003).name('Time Speed').onChange(value => {
+    timeStep = value;
+    console.log("New timeStep: ", timeStep);
+});
+
+
+
+
+
 
 
