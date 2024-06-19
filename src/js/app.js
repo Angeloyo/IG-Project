@@ -58,21 +58,20 @@ function getRandomInRange(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+function getRandomVector3InRange(min, max) {
+    return new THREE.Vector3(
+        getRandomInRange(min, max),
+        getRandomInRange(min, max),
+        getRandomInRange(min, max)
+    );
+}   
 
 const celestialBodies = [
     {
         type: 'star',
         mass: 1.989e30,
-        position: new THREE.Vector3(
-            getRandomInRange(0, 400),
-            getRandomInRange(0, 400),
-            getRandomInRange(0, 400)
-        ),
-        velocity: new THREE.Vector3(
-            getRandomInRange(1000, 10500),
-            getRandomInRange(1000, 10500),
-            getRandomInRange(1000, 10500),
-            ),
+        position: getRandomVector3InRange(0, 400),
+        velocity: getRandomVector3InRange(1000, 10500),
         mesh: null,
         light: null,
         trailPositions: null,
@@ -81,16 +80,8 @@ const celestialBodies = [
     {
         type: 'star',
         mass: 5.972e24,
-        position: new THREE.Vector3(
-            getRandomInRange(0, 400),
-            getRandomInRange(0, 400),
-            getRandomInRange(0, 400)
-        ),
-        velocity: new THREE.Vector3(
-            getRandomInRange(1000, 10500),
-            getRandomInRange(1000, 10500),
-            getRandomInRange(1000, 10500),
-            ),
+        position: getRandomVector3InRange(0, 400),
+        velocity: getRandomVector3InRange(1000, 10500),
         mesh: null,
         light: null,
         trailPositions: null,
@@ -99,16 +90,8 @@ const celestialBodies = [
     {
         type: 'star',
         mass: 5.972e28,
-        position: new THREE.Vector3(
-            getRandomInRange(0, 400),
-            getRandomInRange(0, 400),
-            getRandomInRange(0, 400)
-        ),
-        velocity: new THREE.Vector3(
-            getRandomInRange(1000, 10500),
-            getRandomInRange(1000, 10500),
-            getRandomInRange(1000, 10500),
-            ),
+        position: getRandomVector3InRange(0, 400),
+        velocity: getRandomVector3InRange(1000, 10500),
         mesh: null,
         light: null,
         trailPositions: null,
@@ -117,16 +100,8 @@ const celestialBodies = [
     {
         type: 'planet',
         mass: 5.972e18,
-        position: new THREE.Vector3(
-            getRandomInRange(0, 400),
-            getRandomInRange(0, 400),
-            getRandomInRange(0, 400)
-        ),
-        velocity: new THREE.Vector3(
-            getRandomInRange(1000, 10500),
-            getRandomInRange(1000, 10500),
-            getRandomInRange(1000, 10500),
-            ),  
+        position: getRandomVector3InRange(0, 400),
+        velocity: getRandomVector3InRange(1000, 10500),
         mesh: null,
         light: null,
         trailPositions: null,
