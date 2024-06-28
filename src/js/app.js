@@ -4,16 +4,14 @@ const gui = new dat.GUI();
 gui.width = 360;
 
 let continuePhysics = true; 
-// let targetCameraPosition = new THREE.Vector3(0, 0, 0);
 let timeStep = 0.0001;
-// let defaultTrailLimit = 800;
 let defaultTrailLimit = 500;
 let G = 6.67430e-11 * 1e-10;  
 let focusedBody = null;
-let velocityRangeStart = 7000;
-let velocityRangeEnd = 15500;
+let velocityRangeStart = 2000;
+let velocityRangeEnd = 12500;
 let positionRangeStart = 0;
-let positionRangeEnd = 400;
+let positionRangeEnd = 700;
 
 // Scene setup
 const scene = new THREE.Scene();
@@ -61,17 +59,16 @@ scene.add(bgSphere);
 
 // Window resize handler
 window.addEventListener('resize', onWindowResize, false);
-
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+// helper functions
 function getRandomInRange(min, max) {
     return Math.random() * (max - min) + min;
 }
-
 function getRandomVector3InRange(min, max) {
     return new THREE.Vector3(
         getRandomInRange(min, max),
@@ -158,8 +155,8 @@ const celestialBodies = [
     },
 ];
 
-const starGeometry = new THREE.SphereGeometry(5, 32, 32); // Size for stars
-const planetGeometry = new THREE.SphereGeometry(2, 32, 32); // Smaller size for planets
+const starGeometry = new THREE.SphereGeometry(5, 32, 32);
+const planetGeometry = new THREE.SphereGeometry(2, 32, 32);
 
 const starTexture1 = loader.load('/src/textures/star1.png');
 const starMaterial = new THREE.MeshBasicMaterial({
@@ -305,8 +302,6 @@ function updateCameraFocus() {
 
 function animate() {
 
-    requestAnimationFrame(animate);
-
     updatePhysics();
 
     createTrailGeometry();
@@ -317,6 +312,8 @@ function animate() {
     
     renderer.render(scene, camera);
 }
+
+renderer.setAnimationLoop( animate );
 
 function startSimulation() {
     continuePhysics = true;
@@ -472,5 +469,7 @@ celestialBodies.forEach((body, index) => {
 });
 celestialBodySettings.open(); 
 
-
-animate();
+// todo:
+// - Save and load congifurations
+// - Add/remove celestial bodies dynamically
+// - 
